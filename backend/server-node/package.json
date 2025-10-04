@@ -1,12 +1,12 @@
 {
-  "name": "study",
+  "name": "silosiro-node",
   "version": "1.0.0",
-  "description": "first node.js project",
+  "description": "silosiro-node",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon --quiet app.js",
-    "test": "jest",
+    "test": "jest",     
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
@@ -18,7 +18,9 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.27"
   },
   "devDependencies": {
     "jest": "^30.2.0",

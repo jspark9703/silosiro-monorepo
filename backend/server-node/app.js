@@ -68,7 +68,7 @@ app.get(['/', '/home'], async (req, res, next) => {
     if (!payload || !payload.username) {
         return res.redirect('/login.html');
     }
-    const User = require('./src/db/schema/user');
+    const User = require('./src/db/schemas/user');
     try {
         const user = await User.findByUsername(payload.username);
         if (!user) {

@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: silosiro-postgres
+    environment:
+      POSTGRES_DB: silosiro_db
+      POSTGRES_USER: silosiro_user
+      POSTGRES_PASSWORD: silosiro_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - silosiro-network
+    restart: unless-stopped
+
+  # Node.js Server
+  node-server:
+    build:
+      context: ./server-node
+      dockerfile: dockerfile
+    container_name: silosiro-node
+    environment:
+      - NODE_ENV=production
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGDATABASE=silosiro_db
+      - PGUSER=silosiro_user
+      - PGPASSWORD=silosiro_password
+      - PGSSL=false
+      - JWT_SECRET=your-jwt-secret-key-here
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - silosiro-network
+    restart: unless-stopped
+    volumes:
+      - ./server-node/public:/app/public
+
+  # Python Server (FastAPI)
+  python-server:
+    build:
+      context: ./server-py/app
+      dockerfile: dockerfile
+    container_name: silosiro-python
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql://silosiro_user:silosiro_password@postgres:5432/silosiro_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - silosiro-network
+    restart: unless-stopped
+    volumes:
+      - ./server-py/experiment:/app/experiment
+
+volumes:
+  postgres_data:
+
+networks:
+  silosiro-network:
+    driver: bridge

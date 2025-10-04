@@ -1,5 +1,5 @@
 const express = require('express');
-const User = require('../src/db/schema/user');
+const UserService = require('../src/db/schemas/user');
 const router = express.Router();
 
 function createUserRouter(verifyAuthPayload) {
@@ -10,7 +10,7 @@ function createUserRouter(verifyAuthPayload) {
             return res.status(400).json({ ok: false, error: 'username required' });
         }
         try {
-            const user = await User.findByUsername(username);
+            const user = await UserService.findByUsername(username);
             return res.json({ ok: true, available: !user });
         } catch (e) {
             return res.status(500).json({ ok: false, error: 'check failed' });
@@ -22,7 +22,7 @@ function createUserRouter(verifyAuthPayload) {
 		if (!payload || !payload.username) {
 			return res.json({ ok: true, authenticated: false });
 		}
-		const user = await User.findByUsername(payload.username);
+		const user = await UserService.findByUsername(payload.username);
 		if (!user) {
 			return res.json({ ok: true, authenticated: false });
 		}
@@ -32,7 +32,7 @@ function createUserRouter(verifyAuthPayload) {
 	// GET /:username (basic user info)
 	router.get('/:username', async (req, res) => {
 		const { username } = req.params;
-		const user = await User.findByUsername(username);
+		const user = await UserService.findByUsername(username);
 		if (!user) {
 			return res.status(404).json({ ok: false, error: 'user not found' });
 		}
